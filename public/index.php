@@ -7,20 +7,16 @@ define('APP', ROOT . '/app');
 define('CORE', ROOT . '/core');
 define('VIEWS', ROOT . '/views');
 
-// Autoload classes (basic)
+// Autoload classes (basic PSR-4 like)
 spl_autoload_register(function ($class) {
-    $class = str_replace('\\', DIRECTORY_SEPARATOR, $class);
-    $paths = [
-        ROOT . '/' . $class . '.php',
-        CORE . '/' . $class . '.php',
-        APP . '/Controllers/' . $class . '.php',
-        APP . '/Models/' . $class . '.php',
-    ];
-    foreach ($paths as $path) {
-        if (file_exists($path)) {
-            require_once $path;
-            return;
-        }
+    // Map namespace to directory
+    $classPath = str_replace('\\', DIRECTORY_SEPARATOR, $class) . '.php';
+
+    // Attempt to load from ROOT (covers app/Controllers, app/Models, core/ etc.)
+    $fullPath = ROOT . DIRECTORY_SEPARATOR . $classPath;
+
+    if (file_exists($fullPath)) {
+        require_once $fullPath;
     }
 });
 
@@ -28,8 +24,11 @@ spl_autoload_register(function ($class) {
 session_start();
 
 // Basic Routing
-$url = isset($_GET['url']) ? rtrim($_GET['url'], '/') : 'dashboard';
-$url = explode('/', $url);
+$urlPath = isset($_GET['url']) ? rtrim($_GET['url'], '/') : '';
+if (empty($urlPath)) {
+    $urlPath = 'dashboard';
+}
+$url = explode('/', $urlPath);
 
 $controllerName = 'app\\Controllers\\' . ucfirst($url[0]) . 'Controller';
 $methodName = isset($url[1]) ? $url[1] : 'index';

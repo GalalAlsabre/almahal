@@ -13,6 +13,12 @@ class Database {
         try {
             // Using SQLite for this environment as MySQL is not available
             $dbPath = ROOT . '/config/hotel.sqlite';
+
+            // Check if directory is writable (needed for SQLite journal files)
+            if (!is_writable(dirname($dbPath))) {
+                die("Error: The directory " . dirname($dbPath) . " is not writable. SQLite needs write access to the directory to create temporary files.");
+            }
+
             $this->conn = new PDO("sqlite:" . $dbPath);
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $this->conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
