@@ -21,6 +21,13 @@ abstract class Controller {
     }
 
     protected function redirect($url) {
+        if (strpos($url, 'http') !== 0) {
+            $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http";
+            $host = $_SERVER['HTTP_HOST'];
+            $scriptName = $_SERVER['SCRIPT_NAME'];
+            $base = (strpos($scriptName, 'index.php') !== false) ? str_replace('/public/index.php', '', $scriptName) : '';
+            $url = $protocol . "://" . $host . $base . '/' . ltrim($url, '/');
+        }
         header("Location: " . $url);
         exit;
     }

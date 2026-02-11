@@ -31,12 +31,12 @@ class AuthController extends Controller {
                 $this->view('auth/login', ['error' => 'خطأ في اسم المستخدم أو كلمة المرور'], null);
             }
         } else {
-            $this->redirect('auth');
+            $this->redirect('/auth');
         }
     }
 
     public function logout() {
         session_destroy();
-        $this->redirect('auth');
+        $this->redirect('/auth');
     }
 }
